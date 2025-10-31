@@ -1,6 +1,4 @@
-using System;
-
-namespace MyApiApp.Abstractions;
+namespace TheEmployeeAPI.Abstractions;
 
 public interface IRepository<T>
 {
@@ -9,5 +7,4 @@ public interface IRepository<T>
     void Create(T entity);
     void Update(T entity);
     void Delete(T entity);
-
 }
