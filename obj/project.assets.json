@@ -5219,11 +5219,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DELL\\Documents\\Sharp\\webApi\\MyApiApp\\MyApiApp.csproj",
+      "projectUniqueName": "C:\\Users\\DELL\\Documents\\Sharp\\MyApi\\building-apis--csharp-and-aspnet-core\\MyApiApp.csproj",
       "projectName": "MyApiApp",
-      "projectPath": "C:\\Users\\DELL\\Documents\\Sharp\\webApi\\MyApiApp\\MyApiApp.csproj",
+      "projectPath": "C:\\Users\\DELL\\Documents\\Sharp\\MyApi\\building-apis--csharp-and-aspnet-core\\MyApiApp.csproj",
       "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DELL\\Documents\\Sharp\\webApi\\MyApiApp\\obj\\",
+      "outputPath": "C:\\Users\\DELL\\Documents\\Sharp\\MyApi\\building-apis--csharp-and-aspnet-core\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config"
