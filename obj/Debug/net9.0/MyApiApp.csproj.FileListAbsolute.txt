@@ -331,3 +331,5 @@ C:\Users\DELL\Documents\Sharp\MyApi\building-apis--csharp-and-aspnet-core\obj\De
 C:\Users\DELL\Documents\Sharp\MyApi\building-apis--csharp-and-aspnet-core\obj\Debug\net9.0\MyApiApp.pdb
 C:\Users\DELL\Documents\Sharp\MyApi\building-apis--csharp-and-aspnet-core\obj\Debug\net9.0\MyApiApp.genruntimeconfig.cache
 C:\Users\DELL\Documents\Sharp\MyApi\building-apis--csharp-and-aspnet-core\obj\Debug\net9.0\ref\MyApiApp.dll
+C:\Users\DELL\Documents\Sharp\MyApi\building-apis--csharp-and-aspnet-core\bin\Debug\net9.0\FluentValidation.dll
+C:\Users\DELL\Documents\Sharp\MyApi\building-apis--csharp-and-aspnet-core\bin\Debug\net9.0\FluentValidation.DependencyInjectionExtensions.dll

@@ -1,5 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MyApiApp;
+using MyApiApp.Abstractions;
 using MyApiApp.Data;
 using MyApiApp.Employees;
 
@@ -17,6 +21,11 @@ builder.Services.AddSwaggerGen(); // <- from Swashbuckle
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddSingleton<EmployeeRepository>();
+builder.Services.AddProblemDetails();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 
 var app = builder.Build();
 var EmployeesRout = app.MapGroup("employees");
@@ -38,28 +47,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild",
-    "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
+EmployeesRout.MapGet(string.Empty, ([FromServices] EmployeeRepository repository) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast(
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        )).ToArray();
-
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-EmployeesRout.MapGet(String.Empty, () =>
-{
-    Results.Ok(employees.Select(employee => new GetEmployeeResponse
+    return Results.Ok(repository.GetAll().Select(employee => new GetEmployeeResponse
     {
         FirstName = employee.FirstName,
         LastName = employee.LastName,
@@ -69,14 +60,13 @@ EmployeesRout.MapGet(String.Empty, () =>
         State = employee.State,
         ZipCode = employee.ZipCode,
         PhoneNumber = employee.PhoneNumber,
-        Email = employee.Email,
+        Email = employee.Email
     }));
-    return employees;
 });
 
-EmployeesRout.MapGet("{id:int}", (int id) =>
+EmployeesRout.MapGet("{id:int}", ([FromRoute] int id, [FromServices] EmployeeRepository repository) =>
 {
-    var employee = employees.SingleOrDefault(e => e.Id == id);
+    var employee = repository.GetById(id);
     if (employee == null)
     {
         return Results.NotFound();
@@ -95,30 +85,40 @@ EmployeesRout.MapGet("{id:int}", (int id) =>
     });
 });
 
-EmployeesRout.MapPost(string.Empty, ([FromBody] CreateEmployeeReuest employee) =>
+EmployeesRout.MapPost(string.Empty, async ([FromBody] CreateEmployeeRequest employeeRequest, [FromServices] EmployeeRepository repository, IValidator<CreateEmployeeRequest> validator) =>
 {
-    var newEmployee = new Employee
+    // var validationProblems = new List<ValidationResult>();
+    // var isValid = Validator.TryValidateObject(employeeRequest, new ValidationContext(employeeRequest), validationProblems, true);
+    // if (!isValid)
+    // {
+    //     return Results.BadRequest(validationProblems.ToValidationProblemDetails());
+    // }
+    var validationResults = await validator.ValidateAsync(employeeRequest);
+    if (!validationResults.IsValid)
     {
-        Id = employees.Max(e => e.Id) + 1,
-        FirstName = employee.FirstName,
-        LastName = employee.LastName,
-        SocialSequreNumber = employee.SocialSequreNumber,
-        Address1 = employee.Address1,
-        Address2 = employee.Address2,
-        City = employee.City,
-        State = employee.State,
-        ZipCode = employee.ZipCode,
-        PhoneNumber = employee.PhoneNumber,
-        Email = employee.Email
+        return Results.ValidationProblem(validationResults.ToDictionary());
+    }
+
+    var employee = new Employee
+    {
+        FirstName = employeeRequest.FirstName!,
+        LastName = employeeRequest.LastName!,
+        Address1 = employeeRequest.Address1,
+        Address2 = employeeRequest.Address2,
+        City = employeeRequest.City,
+        State = employeeRequest.State,
+        ZipCode = employeeRequest.ZipCode,
+        PhoneNumber = employeeRequest.PhoneNumber,
+        Email = employeeRequest.Email
     };
-    // employee.Id = employees.Max(e => e.Id) + 1; // We're not using a database, so we need to manually assign an ID
-    // employees.Add(employee);
-    return Results.Created($"/employees/{newEmployee.Id}", employee);
+
+    repository.Create(employee);
+    return Results.Ok(employee);
 });
 
-EmployeesRout.MapPut("{id:int}", ([FromBody] UpdateEmployeeRequest employee, [FromRoute] int id) =>
+EmployeesRout.MapPut("{id:int}", ([FromBody] UpdateEmployeeRequest employee, [FromRoute] int id, [FromServices] EmployeeRepository repository) =>
 {
-    var existingEmployee = employees.SingleOrDefault(e => e.Id == id);
+    var existingEmployee = repository.GetById(id);
     if (existingEmployee == null)
     {
         return Results.NotFound();

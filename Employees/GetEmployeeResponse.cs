@@ -1,11 +1,15 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 
 namespace MyApiApp.Employees;
 
-public class CreateEmployeeReuest
+public class CreateEmployeeRequest
 {
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
+    // [Required(AllowEmptyStrings = false)]
+    public string? FirstName { get; set; }
+    // [Required(AllowEmptyStrings = false)]
+    public string? LastName { get; set; }
     public string? SocialSequreNumber { get; set; }
     public string? Address1 { get; set; }
     public string? Address2 { get; set; }
@@ -18,6 +22,7 @@ public class CreateEmployeeReuest
 
 public class GetEmployeeResponse
 {
+    // public int Id { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public string? Address1 { get; set; }
@@ -40,4 +45,13 @@ public class UpdateEmployeeRequest
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
 
+}
+
+public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
+{
+    public CreateEmployeeRequestValidator()
+    {
+        RuleFor(x => x.FirstName).NotEmpty();
+        RuleFor(x => x.LastName).NotEmpty();
+    }
 }
