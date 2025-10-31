@@ -25,6 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddSingleton<EmployeeRepository>();
 builder.Services.AddProblemDetails();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddControllers();
 
 
 var app = builder.Build();
@@ -138,7 +139,8 @@ EmployeesRout.MapPut("{id:int}", ([FromBody] UpdateEmployeeRequest employee, [Fr
 app.MapGet("/api/hello", () => Results.Ok(new { message = "Hello World!" }))
    .WithName("GetHelloWorld");
 
-
+app.UseHttpsRedirection();
+app.MapControllers();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
